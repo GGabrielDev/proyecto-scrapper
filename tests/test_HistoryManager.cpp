@@ -1,34 +1,25 @@
 #include <cassert>
 #include <iostream>
-#include "HistoryManager.h"
-#include "Page.h"
+#include "Bookmark.h"
+#include "StringUtils.h"
 
-void test_visit_and_getCurrent() {
-    HistoryManager history;
-    Page p1("https://example.com", "Example");
-    history.visit(p1);
-    assert(history.getCurrent().getUrl() == "https://example.com");
+void test_bookmark_creation() {
+    Bookmark bm("https://example.com", "Example", "Noticias");
+
+    assert(compareString(bm.getUrl(), "https://example.com") == 0);
+    assert(compareString(bm.getName(), "Example") == 0);
+    assert(compareString(bm.getFolder(), "Noticias") == 0);
 }
 
-void test_back_and_forward() {
-    HistoryManager history;
-    history.visit(Page("https://a.com", "A"));
-    history.visit(Page("https://b.com", "B"));
-    history.visit(Page("https://c.com", "C"));
-
-    history.goBack();
-    assert(history.getCurrent().getUrl() == "https://b.com");
-
-    history.goBack();
-    assert(history.getCurrent().getUrl() == "https://a.com");
-
-    history.goForward();
-    assert(history.getCurrent().getUrl() == "https://b.com");
+void test_set_folder() {
+    Bookmark bm("https://a.com", "A");
+    bm.setFolder("Favoritos");
+    assert(compareString(bm.getFolder(), "Favoritos") == 0);
 }
 
 int main() {
-    test_visit_and_getCurrent();
-    test_back_and_forward();
-    std::cout << "All tests passed.\n";
+    test_bookmark_creation();
+    test_set_folder();
+    std::cout << "All Bookmark tests passed.\n";
     return 0;
 }

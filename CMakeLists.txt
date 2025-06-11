@@ -3,12 +3,12 @@ project(ProyectoFavoritos)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Importante: activar CTest
+# Habilitar pruebas con CTest
 enable_testing()
 
-# Incluir headers
+# Incluir headers globalmente
 include_directories(include)
 
-# Subdirectorios
+# Agregar subdirectorios con lógica
 add_subdirectory(src)
 add_subdirectory(tests)

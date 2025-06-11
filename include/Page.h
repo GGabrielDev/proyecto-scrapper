@@ -1,17 +1,20 @@
 #ifndef PAGE_H
 #define PAGE_H
 
-#include <string>
-
 class Page {
 private:
-    std::string url;
-    std::string title;
+    char url[256];
+    char title[256];
 
 public:
-    Page(const std::string& url, const std::string& title);
-    std::string getUrl() const;
-    std::string getTitle() const;
+    Page();
+    Page(const char* url, const char* title);
+
+    const char* getUrl() const;
+    const char* getTitle() const;
+
+    void setUrl(const char* newUrl);
+    void setTitle(const char* newTitle);
 };
 
 #endif // PAGE_H
