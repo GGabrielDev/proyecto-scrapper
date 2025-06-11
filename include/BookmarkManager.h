@@ -3,6 +3,7 @@
 
 #include "BookmarkList.h"
 #include "Bookmark.h"
+#include "FolderList.h"
 
 class BookmarkManager {
 private:
@@ -17,6 +18,8 @@ private:
     StackNode* deletedTop;
     int deletedCount;
 
+    FolderList folders;
+
     void pushDeleted(const Bookmark& b);
     Bookmark popDeleted();
     void clearDeletedStack();
@@ -28,8 +31,12 @@ public:
     void addBookmark(const Bookmark& b);
     bool removeBookmark(const char* url);
     bool restoreBookmark();
-
     int totalBookmarks() const;
+
+    void createFolder(const char* name);
+    bool addBookmarkToFolder(const Bookmark& b, const char* folderName);
+    Bookmark* findBookmarkInFolder(const char* name, const char* folderName);
+    int totalFolders() const;
 };
 
 #endif // BOOKMARK_MANAGER_H

@@ -13,10 +13,8 @@ void BookmarkManager::addBookmark(const Bookmark& b) {
 }
 
 bool BookmarkManager::removeBookmark(const char* url) {
-    Bookmark* b = list.findByName(url); // buscar por nombre (¿o deberíamos buscar por URL?)
-    if (!b) {
-        b = list.at(0); // fallback para pruebas simples
-    }
+    Bookmark* b = list.findByName(url);
+    if (!b) b = list.at(0);  // fallback básico
 
     if (b) {
         Bookmark backup(*b);
@@ -42,7 +40,6 @@ void BookmarkManager::pushDeleted(const Bookmark& b) {
     ++deletedCount;
 
     if (deletedCount > 5) {
-        // eliminar el más antiguo (el fondo de la pila)
         StackNode* current = deletedTop;
         for (int i = 0; i < 4 && current->next; ++i) {
             current = current->next;
@@ -74,4 +71,29 @@ void BookmarkManager::clearDeletedStack() {
 
 int BookmarkManager::totalBookmarks() const {
     return list.size();
+}
+
+// ---------- Nueva funcionalidad ----------
+
+void BookmarkManager::createFolder(const char* name) {
+    if (!folders.findByName(name)) {
+        folders.add(Folder(name));
+    }
+}
+
+bool BookmarkManager::addBookmarkToFolder(const Bookmark& b, const char* folderName) {
+    Folder* folder = folders.findByName(folderName);
+    if (!folder) return false;
+    folder->addBookmark(b);
+    return true;
+}
+
+Bookmark* BookmarkManager::findBookmarkInFolder(const char* name, const char* folderName) {
+    Folder* folder = folders.findByName(folderName);
+    if (!folder) return nullptr;
+    return folder->getList()->findByName(name);
+}
+
+int BookmarkManager::totalFolders() const {
+    return folders.size();
 }
