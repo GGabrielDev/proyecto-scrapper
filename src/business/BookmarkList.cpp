@@ -41,7 +41,7 @@ Bookmark* BookmarkList::findByName(const char* name) {
     return nullptr;
 }
 
-Bookmark* BookmarkList::at(int index) {
+Bookmark* BookmarkList::at(int index) const {
     Node* current = head;
     int i = 0;
     while (current) {

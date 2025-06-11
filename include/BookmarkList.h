@@ -20,7 +20,7 @@ public:
     void add(const Bookmark& b);
     bool removeByUrl(const char* url); // elimina el primer match
     Bookmark* findByName(const char* name); // retorna puntero o nullptr
-    Bookmark* at(int index); // acceso directo
+    Bookmark* at(int index) const; // acceso directo
     int size() const;
     void clear();
 };
