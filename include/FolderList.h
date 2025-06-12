@@ -4,23 +4,31 @@
 #include "Folder.h"
 
 class FolderList {
-private:
+public:
     struct Node {
         Folder data;
         Node* next;
-        Node(const Folder& f) : data(f), next(nullptr) {}
+        Node(const Folder& f) : data(f.getName()), next(nullptr) {
+            BookmarkList* sourceList = f.getList();
+            for (int i = 0; i < sourceList->size(); ++i) {
+                Bookmark* b = sourceList->at(i);
+                if (b) data.addBookmark(*b);  // ❗Copiar contenido, no estructura
+            }
+        }
     };
 
-    Node* head;
-
-public:
     FolderList();
     ~FolderList();
 
-    void add(const Folder& f);
-    Folder* findByName(const char* name);
-    int size() const;
     void clear();
+    void add(const Folder& f);
+    int size() const;
+    Folder* findByName(const char* name);
+    Node* getHead() const { return head; }
+
+private:
+    Node* head;
+
 };
 
 #endif // FOLDER_LIST_H

@@ -16,7 +16,7 @@ public:
 
     void addBookmark(const Bookmark& b);
     bool removeBookmark(const char* url);
-    BookmarkList* getList();
+    BookmarkList* getList() const;
 };
 
 #endif // FOLDER_H

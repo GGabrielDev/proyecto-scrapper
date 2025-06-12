@@ -21,6 +21,6 @@ bool Folder::removeBookmark(const char* url) {
     return list.removeByUrl(url);
 }
 
-BookmarkList* Folder::getList() {
-    return &list;
+BookmarkList* Folder::getList() const {
+    return const_cast<BookmarkList*>(&list);
 }
