@@ -37,6 +37,9 @@ public:
     bool addBookmarkToFolder(const Bookmark& b, const char* folderName);
     Bookmark* findBookmarkInFolder(const char* name, const char* folderName);
     int totalFolders() const;
+
+    void saveToDisk(const char* bookmarksPath, const char* foldersPath);
+    void loadFromDisk(const char* bookmarksPath, const char* foldersPath);
 };
 
 #endif // BOOKMARK_MANAGER_H

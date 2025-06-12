@@ -1,4 +1,5 @@
 #include "BookmarkManager.h"
+#include "FileStorage.h"
 #include "StringUtils.h"
 
 BookmarkManager::BookmarkManager()
@@ -96,4 +97,32 @@ Bookmark* BookmarkManager::findBookmarkInFolder(const char* name, const char* fo
 
 int BookmarkManager::totalFolders() const {
     return folders.size();
+}
+
+void BookmarkManager::saveToDisk(const char* bookmarksPath, const char* foldersPath) {
+    // Guardar favoritos sueltos
+    BookmarkList listCopy;
+    for (int i = 0; i < list.size(); ++i) {
+        Bookmark* b = list.at(i);
+        if (b) listCopy.add(*b);
+    }
+    FileStorage::saveBookmarks(listCopy, bookmarksPath);
+
+    // Guardar carpetas
+    FileStorage::saveFolders(folders, foldersPath);
+}
+
+void BookmarkManager::loadFromDisk(const char* bookmarksPath, const char* foldersPath) {
+    // Cargar favoritos sueltos
+    BookmarkList loaded;
+    FileStorage::loadBookmarks(loaded, bookmarksPath);
+    list.clear();
+    for (int i = 0; i < loaded.size(); ++i) {
+        Bookmark* b = loaded.at(i);
+        if (b) list.add(*b);
+    }
+
+    // Cargar carpetas
+    folders.clear();
+    FileStorage::loadFolders(folders, foldersPath);
 }
