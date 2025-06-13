@@ -28,6 +28,10 @@ public:
     BookmarkManager();
     ~BookmarkManager();
 
+
+    const Bookmark* atRaw(int index) const;
+    const FolderList* getFolderList() const;
+
     void addBookmark(const Bookmark& b);
     bool removeBookmark(const char* url);
     bool restoreBookmark();

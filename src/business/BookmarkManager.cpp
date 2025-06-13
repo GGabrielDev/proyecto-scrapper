@@ -9,6 +9,14 @@ BookmarkManager::~BookmarkManager() {
     clearDeletedStack();
 }
 
+const Bookmark* BookmarkManager::atRaw(int index) const {
+    return list.at(index);
+}
+
+const FolderList* BookmarkManager::getFolderList() const {
+    return &folders;
+}
+
 void BookmarkManager::addBookmark(const Bookmark& b) {
     list.add(b);
 }
@@ -73,8 +81,6 @@ void BookmarkManager::clearDeletedStack() {
 int BookmarkManager::totalBookmarks() const {
     return list.size();
 }
-
-// ---------- Nueva funcionalidad ----------
 
 void BookmarkManager::createFolder(const char* name) {
     if (!folders.findByName(name)) {
