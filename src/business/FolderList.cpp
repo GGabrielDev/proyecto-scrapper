@@ -13,7 +13,7 @@ void FolderList::add(const Folder& f) {
     head = newNode;
 }
 
-Folder* FolderList::findByName(const char* name) {
+Folder* FolderList::findByName(const char* name) const {
     Node* current = head;
     while (current) {
         if (compareString(current->data.getName(), name) == 0) {

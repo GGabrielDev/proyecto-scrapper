@@ -23,7 +23,7 @@ public:
     void clear();
     void add(const Folder& f);
     int size() const;
-    Folder* findByName(const char* name);
+    Folder* findByName(const char* name) const;
     Node* getHead() const { return head; }
 
 private:
