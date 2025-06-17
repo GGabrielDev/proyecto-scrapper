@@ -7,7 +7,16 @@
 static void showMenu();
 static int readOption();
 static void handleListAll(const BookmarkManager& manager);
+static void handleAddBookmark(BookmarkManager& manager);
 static void handleExit();
+
+static void clearScreen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    std::system("clear");
+#endif
+}
 
 void ConsoleUI::run() {
     BookmarkManager manager;
@@ -20,6 +29,9 @@ void ConsoleUI::run() {
         switch (option) {
             case 1:
                 handleListAll(manager);
+                break;
+            case 3:
+                handleAddBookmark(manager);
                 break;
             case 0:
                 handleExit();
@@ -65,4 +77,24 @@ static void handleListAll(const BookmarkManager& manager) {
 
 static void handleExit() {
     std::cout << "\n¡Hasta luego!\n";
+}
+
+static void handleAddBookmark(BookmarkManager& manager) {
+    clearScreen();
+    std::cout << "\n--- Agregar un favorito ---\n";
+
+    char url[256], name[256], folder[256];
+
+    std::cout << "Ingrese la URL: ";
+    std::cin.getline(url, sizeof(url));
+
+    std::cout << "Ingrese el nombre: ";
+    std::cin.getline(name, sizeof(name));
+
+    std::cout << "¿Desea agregarlo a una carpeta? (deje vacío si no): ";
+    std::cin.getline(folder, sizeof(folder));
+
+    manager.addBookmark(Bookmark(url, name, folder));
+
+    std::cout << "✔ Favorito agregado correctamente.\n";
 }
