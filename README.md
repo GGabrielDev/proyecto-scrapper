@@ -21,167 +21,168 @@ Contexto del proyecto: simular la navegación en un navegador web y gestionar fa
 7. Restaurar favoritos eliminados (máximo 5, orden LIFO).
 8. Organizar favoritos en carpetas.
 9. Exportar favoritos a HTML.
+10. Guardar y cargar favoritos desde disco.
+11. Interacción por consola a través de menú.
 
 ### 3.2 Requerimientos no funcionales
 
-- Persistencia de favoritos en archivo de texto.
-- Estructura de 3 capas: presentación, negocios, datos.
-- Interfaz de consola.
-- Legibilidad y estilo de código comentado.
+- Persistencia de favoritos en archivos de texto.
+- Estructura de 3 capas: presentación, lógica de negocio, persistencia.
+- Interfaz de consola con menú interactivo.
+- Código modular, legible y con pruebas unitarias e integración.
 
 ## 4. Casos de uso
 
-- Descripción de flujos: navegar, agregar favorito, eliminar, restaurar, organizar, exportar.
+- Descripción de flujos: navegar, agregar/eliminar/restaurar favorito, organizar en carpetas, guardar/cargar, exportar a HTML.
 
 ## 5. Diseño de la arquitectura
 
 ### 5.1 Capas del sistema
 
-- **Capa de presentación**: clases para interfaz de consola.
-- **Capa de negocios**: lógica de navegación y gestión de favoritos.
-- **Capa de datos**: lectura y escritura en archivos de texto.
+- **Capa de presentación**: UI por consola con menú interactivo.
+- **Capa de negocios**: `BookmarkManager`, `HistoryManager`, validación y lógica de datos.
+- **Capa de datos**: persistencia en archivos (`FileStorage`, `HtmlExporter`).
 
-## 5.2 Diagrama de componentes y clases
-
-Para visualizar la organización del sistema y sus entidades, a continuación un diagrama más detallado en **Mermaid** que muestra componentes, clases y sus relaciones:
+### 5.2 Diagrama de componentes y clases (Mermaid actualizado)
 
 ```mermaid
 classDiagram
     %% Capa de Presentación
     class ConsoleUI {
-        +start()
-        +showMenu()
-        +handleInput()
+        +run()
     }
 
-    %% Capa de Negocios
+    %% Capa de Negocio
     class HistoryManager {
-        -backStack: Stack<Page>
-        -forwardStack: Stack<Page>
-        +visit(page: Page)
+        -backStack: PageStack
+        -forwardStack: PageStack
+        +visit(Page)
         +goBack(): Page
         +goForward(): Page
         +getCurrent(): Page
     }
 
     class BookmarkManager {
-        -bookmarks: List<Bookmark>
-        -deletedStack: Stack<Bookmark>
-        +addBookmark(b: Bookmark)
-        +removeBookmark(id: String)
-        +restoreBookmark(): Bookmark
-        +listByFolder(name: String)
+        -list: BookmarkList
+        -folders: FolderList
+        -deletedStack: BookmarkStack
+        +addBookmark(Bookmark)
+        +removeBookmark(url: const char*)
+        +restoreBookmark()
+        +createFolder(name: const char*)
+        +addBookmarkToFolder(Bookmark, name: const char*)
+        +getFolderList(): const FolderList*
+        +atRaw(index: int): const Bookmark*
+        +totalBookmarks(): int
+        +saveToDisk(bookmarkPath, folderPath)
+        +loadFromDisk(bookmarkPath, folderPath)
     }
 
-    class HTMLExporter {
-        +export(bookmarks: List<Bookmark>, path: String)
+    class HtmlExporter {
+        +exportToFile(manager: BookmarkManager, path: const char*): bool
     }
 
-    %% Entidades de Dominio
+    %% Entidades de dominio
     class Page {
-        +url: String
-        +title: String
+        -url: char[]
+        -title: char[]
     }
 
     class Bookmark {
-        +url: String
-        +name: String
-        +folder: String
+        -url: char[]
+        -name: char[]
+        -folder: char[]
     }
 
     class Folder {
-        +name: String
-        +bookmarks: List<Bookmark>
-        +addBookmark(b: Bookmark)
-        +removeBookmark(b: Bookmark)
+        -name: char[]
+        -list: BookmarkList
+        +addBookmark(Bookmark)
+        +getList(): BookmarkList*
     }
 
     %% Capa de Datos
     class FileStorage {
-        +saveFavorites(bookmarks: List<Bookmark>): void
-        +loadFavorites(): List<Bookmark>
-        +saveHistory(history: List<Page>): void
-        +loadHistory(): List<Page>
+        +saveBookmarks(BookmarkList, path)
+        +loadBookmarks(BookmarkList&, path)
+        +saveFolders(FolderList, path)
+        +loadFolders(FolderList&, path)
     }
 
     %% Relaciones
-    ConsoleUI --> HistoryManager : utiliza
-    ConsoleUI --> BookmarkManager : utiliza
-    BookmarkManager --> HTMLExporter : genera exportaciones
-    BookmarkManager --> FileStorage : persiste favoritos
-    HistoryManager --> FileStorage : persiste historial
-    Folder --> Bookmark : contine
+    ConsoleUI --> BookmarkManager : usa
+    ConsoleUI --> HistoryManager : usa
+    BookmarkManager --> FileStorage : persiste
+    BookmarkManager --> HtmlExporter : exporta
+    BookmarkManager --> FolderList
+    Folder --> BookmarkList
 ```
 
-## 6. Estructuras de datos y diagrama de clases Estructuras de datos y diagrama de clases
+## 6. Estructuras de datos y diagrama de clases
 
-- **Historial**: lista doble enlazada o dos pilas para atrás/adelante.
-- **Favoritos**: lista de objetos {URL, nombre, carpeta}.
-- **Pila de eliminados**: pila LIFO tamaño máximo 5.
+- **Historial**: dos pilas (`PageStack`) para navegación hacia atrás y adelante.
+- **Favoritos**: lista lineal (`BookmarkList`) y carpetas (`FolderList` → `Folder` → `BookmarkList`).
+- **Pila de eliminados**: `BookmarkStack`, tamaño máximo 5.
+- **Estructuras auxiliares**: utilidades de cadenas (`StringUtils`), sin uso de STL.
 
 ## 7. Plan de pruebas
 
-- Pruebas unitarias para cada función.
-- Pruebas de integración de capas.
-- Pruebas de manejo de errores y límites.
+- Pruebas unitarias por entidad (`Bookmark`, `Folder`, `BookmarkManager`, etc.).
+- Pruebas de integración para operaciones compuestas (agregar + guardar + cargar, etc.).
+- Pruebas UI para cada opción de menú (simuladas manualmente vía `BookmarkManager`).
+- Validación de errores (eliminar inexistente, exportar sin favoritos, restaurar vacío).
 
 ## 8. Cronograma y entregables
 
 - Fase 1: Análisis y documentación (1 semana).
-- Fase 2: Diseño y diagramas (1 semana).
-- Fase 3: Implementación (2 semanas).
-- Fase 4: Pruebas y refinamiento (1 semana).
-- Entrega final: Informe con documentación, código y resultados de pruebas.
+- Fase 2: Diseño y estructura base de clases y pruebas (1 semana).
+- Fase 3: Implementación funcional por capas y pruebas (2 semanas).
+- Fase 4: UI por consola + refinamiento + exportación (1 semana).
+- Entrega final: informe completo, código, pruebas y documentación actualizada.
 
 ## 9. Plan de implementación en código
 
-A continuación, los pasos ordenados para el desarrollo en código:
+**Nota**: Archivos `.h` en `include/`, archivos `.cpp` en `src/` divididos por dominio (`business/`, `file/`, `ui/`, `utility/`). Se trabaja con TDD (pruebas antes que implementación).
 
-1. **Estructuras de datos básicas**
+### Pasos en orden lógico:
 
-   - Implementar la clase `Page` con atributos `url` y `title`.
-   - Crear la clase `HistoryManager` con dos pilas (`backStack`, `forwardStack`) y métodos `visit(Page)`, `goBack()`, `goForward()`.
+1. **Estructuras básicas**
 
-2. **Gestión de favoritos**
+   - `Page`, `Bookmark`, `PageStack`, `BookmarkList`, `BookmarkStack`, `Folder`, `FolderList`, `StringUtils`.
 
-   - Definir la clase `Bookmark` con `url`, `name` y opcional `folder`.
-   - Implementar `BookmarkManager` con:
+2. **Gestores**
 
-     - Lista de favoritos.
-     - Pila LIFO para favoritos eliminados (tamaño 5).
-     - Métodos `addBookmark(Bookmark)`, `removeBookmark(String urlOrName)`, `restoreBookmark()`.
+   - `HistoryManager` con `visit()`, `goBack()`, `goForward()`.
+   - `BookmarkManager` con `addBookmark()`, `removeBookmark()`, `restoreBookmark()`, `addBookmarkToFolder()`, `createFolder()`.
 
-3. **Organización en carpetas**
+3. **Persistencia**
 
-   - Extender `BookmarkManager` para manejar carpetas: `createFolder()`, `moveBookmarkToFolder()`, `listByFolder()`.
+   - `FileStorage`: `saveBookmarks`, `loadBookmarks`, `saveFolders`, `loadFolders`.
+   - Integración en `BookmarkManager` con `saveToDisk()` y `loadFromDisk()`.
 
-4. **Persistencia de datos**
+4. **Exportación**
 
-   - Implementar la capa de datos: clase `FileStorage` con métodos `saveFavorites(List<Bookmark>)` y `loadFavorites()`.
-   - Asegurar serialización y deserialización en un archivo de texto.
+   - `HtmlExporter::exportToFile()`.
+   - Exportar lista completa de favoritos y carpetas a archivo `.html`.
 
-5. **Interfaz de consola**
+5. **Interfaz de usuario (UI)**
 
-   - Crear `ConsoleUI` con menú interactivo:
+   - `ConsoleUI` con menú principal:
 
-     - Opciones: navegar, atrás, adelante, agregar favorito, eliminar, restaurar, listar favoritos, organizarlos, exportar.
+     1. Ver favoritos sueltos
+     2. Ver favoritos por carpeta
+     3. Agregar favorito
+     4. Eliminar favorito
+     5. Crear carpeta
+     6. Agregar favorito a carpeta
+     7. Guardar
+     8. Cargar
+     9. Exportar a HTML
+     10. Salir
 
-   - Leer entradas de usuario y llamar a los métodos correspondientes de los managers.
+6. **Pruebas**
 
-6. **Exportación a HTML**
-
-   - Añadir en `BookmarkManager` o en una clase `HTMLExporter` método `exportToHTML(String filePath)`.
-   - Generar un archivo `.html` con la lista jerárquica de favoritos y carpetas.
-
-7. **Pruebas unitarias**
-
-   - Escribir tests para `HistoryManager`, `BookmarkManager`, `FileStorage` y `HTMLExporter`.
-   - Cobertura de casos límite (p. ej., pila de historial vacía, límite de restauración de favoritos).
-
-8. **Integración y refinamiento**
-
-   - Integrar todas las capas en `main()`.
-   - Validar flujo completo: navegar, marcar, exportar.
-   - Pulir mensajes de consola y manejo de errores.
+   - Tests unitarios e integración por carpeta `tests/`.
+   - Validación de cada funcionalidad del menú como pruebas de integración independientes.
 
 ---
