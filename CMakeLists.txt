@@ -12,3 +12,9 @@ include_directories(include)
 # Agregar subdirectorios con lógica
 add_subdirectory(src)
 add_subdirectory(tests)
+
+# Ejecutable principal
+add_executable(proyecto-favoritos main.cpp)
+
+# Enlaza con la librería core (definida en src/CMakeLists.txt)
+target_link_libraries(proyecto-favoritos core)
