@@ -53,69 +53,126 @@ classDiagram
     }
 
     %% Capa de Negocio
+    class BookmarkManager {
+        -list: BookmarkList
+        -folders: FolderList
+        -deletedStack: BookmarkStack
+        +addBookmark(Bookmark)
+        +removeBookmark(const char*)
+        +restoreBookmark()
+        +createFolder(const char*)
+        +addBookmarkToFolder(Bookmark, const char*)
+        +getFolderList(): const FolderList*
+        +atRaw(int): const Bookmark*
+        +totalBookmarks(): int
+        +saveToDisk(const char*, const char*)
+        +loadFromDisk(const char*, const char*)
+    }
+
     class HistoryManager {
         -backStack: PageStack
         -forwardStack: PageStack
+        -current: Page
         +visit(Page)
         +goBack(): Page
         +goForward(): Page
         +getCurrent(): Page
     }
 
-    class BookmarkManager {
-        -list: BookmarkList
-        -folders: FolderList
-        -deletedStack: BookmarkStack
-        +addBookmark(Bookmark)
-        +removeBookmark(url: const char*)
-        +restoreBookmark()
-        +createFolder(name: const char*)
-        +addBookmarkToFolder(Bookmark, name: const char*)
-        +getFolderList(): const FolderList*
-        +atRaw(index: int): const Bookmark*
-        +totalBookmarks(): int
-        +saveToDisk(bookmarkPath, folderPath)
-        +loadFromDisk(bookmarkPath, folderPath)
-    }
-
-    class HtmlExporter {
-        +exportToFile(manager: BookmarkManager, path: const char*): bool
-    }
-
-    %% Entidades de dominio
-    class Page {
-        -url: char[]
-        -title: char[]
-    }
-
+    %% Entidades de Dominio
     class Bookmark {
         -url: char[]
         -name: char[]
         -folder: char[]
+        +getUrl(): const char*
+        +getName(): const char*
+        +getFolder(): const char*
     }
 
     class Folder {
         -name: char[]
         -list: BookmarkList
+        +getName(): const char*
         +addBookmark(Bookmark)
+        +removeBookmark(const char*)
         +getList(): BookmarkList*
+    }
+
+    class Page {
+        -url: char[]
+        -title: char[]
+        +getUrl(): const char*
+        +getTitle(): const char*
+    }
+
+    %% Estructuras de Datos
+    class BookmarkList {
+        -head: Node*
+        +add(Bookmark)
+        +removeByUrl(const char*): bool
+        +size(): int
+        +at(int): Bookmark*
+    }
+
+    class FolderList {
+        -head: Node*
+        +add(Folder)
+        +size(): int
+        +findByName(const char*): Folder*
+        +getHead(): Node*
+    }
+
+    class BookmarkStack {
+        -array: Bookmark[]
+        -top: int
+        +push(Bookmark)
+        +pop(): Bookmark
+        +isEmpty(): bool
+    }
+
+    class PageStack {
+        -array: Page[]
+        -top: int
+        +push(Page)
+        +pop(): Page
+        +peek(): Page
+        +isEmpty(): bool
     }
 
     %% Capa de Datos
     class FileStorage {
-        +saveBookmarks(BookmarkList, path)
-        +loadBookmarks(BookmarkList&, path)
-        +saveFolders(FolderList, path)
-        +loadFolders(FolderList&, path)
+        +saveBookmarks(const BookmarkList&, const char*)
+        +loadBookmarks(BookmarkList&, const char*)
+        +saveFolders(const FolderList&, const char*)
+        +loadFolders(FolderList&, const char*)
+    }
+
+    class HtmlExporter {
+        +exportToFile(const BookmarkManager&, const char*): bool
+    }
+
+    class StringUtils {
+        +copy(char* dest, const char* src)
+        +compare(const char*, const char*): int
+        +equals(const char*, const char*): bool
+        +length(const char*): int
     }
 
     %% Relaciones
-    ConsoleUI --> BookmarkManager : usa
-    ConsoleUI --> HistoryManager : usa
-    BookmarkManager --> FileStorage : persiste
-    BookmarkManager --> HtmlExporter : exporta
+    ConsoleUI --> BookmarkManager
+    ConsoleUI --> HistoryManager
+    BookmarkManager --> BookmarkList
     BookmarkManager --> FolderList
+    BookmarkManager --> BookmarkStack
+    BookmarkManager --> FileStorage
+    BookmarkManager --> HtmlExporter
     Folder --> BookmarkList
+    FolderList --> Folder
+    HistoryManager --> PageStack
+    HistoryManager --> Page
+    FileStorage --> BookmarkList
+    FileStorage --> FolderList
+    HtmlExporter --> BookmarkManager
 ```
 
 ## 6. Estructuras de datos y diagrama de clases
