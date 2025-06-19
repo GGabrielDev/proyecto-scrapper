@@ -31,9 +31,33 @@ void test_back_and_forward() {
     assert(compareString(actual.getTitle(), "Dos") == 0);
 }
 
+void test_canGoBack_and_canGoForward() {
+    HistoryManager history;
+
+    assert(!history.canGoBack());
+    assert(!history.canGoForward());
+
+    history.visit(Page("https://uno.com", "Uno"));
+    assert(!history.canGoBack());
+    assert(!history.canGoForward());
+
+    history.visit(Page("https://dos.com", "Dos"));
+    assert(history.canGoBack());
+    assert(!history.canGoForward());
+
+    history.goBack();  // volver a Uno
+    assert(!history.canGoBack());
+    assert(history.canGoForward());
+
+    history.goForward();  // volver a Dos
+    assert(history.canGoBack());
+    assert(!history.canGoForward());
+}
+
 int main() {
     test_visit_and_getCurrent();
     test_back_and_forward();
+    test_canGoBack_and_canGoForward();
     std::cout << "✔ Pruebas de HistoryManager pasaron correctamente.\n";
     return 0;
 }
