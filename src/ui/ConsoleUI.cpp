@@ -1,5 +1,6 @@
 #include "ConsoleUI.h"
 #include "BookmarkManager.h"
+#include "HistoryManager.h"
 #include "HtmlExporter.h"
 #include <iostream>
 #include <cstdio>
@@ -22,6 +23,10 @@ static void handleAddBookmarkToFolder(BookmarkManager& manager);
 static void handleSave(BookmarkManager& manager);
 static void handleLoad(BookmarkManager& manager);
 static void handleExportHtml(const BookmarkManager& manager);
+static void handleVisitPage(HistoryManager& history);
+static void handleGoBack(HistoryManager& history);
+static void handleGoForward(HistoryManager& history);
+static void handleShowCurrentPage(const HistoryManager& history);
 static void handleExit();
 
 static void clearScreen() {
@@ -34,6 +39,7 @@ static void clearScreen() {
 
 void ConsoleUI::run() {
     BookmarkManager manager;
+    HistoryManager history;
 
     int option;
     do {
@@ -65,6 +71,18 @@ void ConsoleUI::run() {
             case 9:
                 handleExportHtml(manager);
                 break;
+            case 10:
+                handleVisitPage(history);
+                break;
+            case 11:
+                handleGoBack(history);
+                break;
+            case 12:
+                handleGoForward(history);
+                break;
+            case 13:
+                handleShowCurrentPage(history);
+                break;
             case 0:
                 handleExit();
                 break;
@@ -87,6 +105,10 @@ static void showMenu() {
     std::cout << "8. Cargar\n";
     std::cout << "9. Exportar a HTML\n";
     std::cout << "0. Salir\n";
+    std::cout << "10. Visitar nueva página\n";
+    std::cout << "11. Retroceder\n";
+    std::cout << "12. Avanzar\n";
+    std::cout << "13. Ver página actual\n";
     std::cout << "Seleccione una opción: ";
 }
 
@@ -251,4 +273,54 @@ static void handleExportHtml(const BookmarkManager& manager) {
     } else {
         std::cout << "❌ Error al generar el archivo HTML.\n";
     }
+}
+
+static void handleVisitPage(HistoryManager& history) {
+    clearScreen();
+    std::cout << "\n--- Visitar nueva página ---\n";
+
+    char url[256], title[128];
+    std::cout << "Ingrese la URL: ";
+    std::cin.getline(url, sizeof(url));
+
+    std::cout << "Ingrese el título: ";
+    std::cin.getline(title, sizeof(title));
+
+    history.visit(Page(url, title));
+    std::cout << "✔ Página visitada: " << title << "\n";
+}
+
+static void handleGoBack(HistoryManager& history) {
+    clearScreen();
+    std::cout << "\n--- Retroceder ---\n";
+
+    if (!history.canGoBack()) {
+        std::cout << "❌ No hay página anterior.\n";
+        return;
+    }
+
+    history.goBack();
+    std::cout << "✔ Página anterior cargada.\n";
+}
+
+static void handleGoForward(HistoryManager& history) {
+    clearScreen();
+    std::cout << "\n--- Avanzar ---\n";
+
+    if (!history.canGoForward()) {
+        std::cout << "❌ No hay página siguiente.\n";
+        return;
+    }
+
+    history.goForward();
+    std::cout << "✔ Página siguiente cargada.\n";
+}
+
+static void handleShowCurrentPage(const HistoryManager& history) {
+    clearScreen();
+    std::cout << "\n--- Página actual ---\n";
+
+    Page actual = history.getCurrent();
+    std::cout << "Título: " << actual.getTitle() << "\n";
+    std::cout << "URL: " << actual.getUrl() << "\n";
 }
