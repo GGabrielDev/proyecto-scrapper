@@ -8,16 +8,18 @@ class HistoryManager {
 private:
     PageStack backStack;
     PageStack forwardStack;
-    Page* current;
+    Page current;
+    bool hasCurrent;
 
 public:
     HistoryManager();
-    ~HistoryManager();
 
     void visit(const Page& page);
     void goBack();
     void goForward();
     Page getCurrent() const;
+    bool canGoBack() const;
+    bool canGoForward() const;
 };
 
 #endif // HISTORY_MANAGER_H

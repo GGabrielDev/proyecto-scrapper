@@ -1,39 +1,36 @@
 #include "HistoryManager.h"
-#include <stdexcept>
 
-HistoryManager::HistoryManager()
-    : current(nullptr) {}
-
-HistoryManager::~HistoryManager() {
-    delete current;
-}
+HistoryManager::HistoryManager() : hasCurrent(false) {}
 
 void HistoryManager::visit(const Page& page) {
-    if (current) {
-        backStack.push(*current);
-        delete current;
+    if (hasCurrent) {
+        backStack.push(current);
     }
-    current = new Page(page);
+    current = page;
+    hasCurrent = true;
     forwardStack.clear();
 }
 
 void HistoryManager::goBack() {
-    if (!backStack.isEmpty()) {
-        forwardStack.push(*current);
-        delete current;
-        current = new Page(backStack.pop());
-    }
+    if (backStack.isEmpty()) return;
+    forwardStack.push(current);
+    current = backStack.pop();
 }
 
 void HistoryManager::goForward() {
-    if (!forwardStack.isEmpty()) {
-        backStack.push(*current);
-        delete current;
-        current = new Page(forwardStack.pop());
-    }
+    if (forwardStack.isEmpty()) return;
+    backStack.push(current);
+    current = forwardStack.pop();
 }
 
 Page HistoryManager::getCurrent() const {
-    if (!current) throw std::runtime_error("No current page");
-    return *current;
+    return current;
+}
+
+bool HistoryManager::canGoBack() const {
+    return !backStack.isEmpty();
+}
+
+bool HistoryManager::canGoForward() const {
+    return !forwardStack.isEmpty();
 }
