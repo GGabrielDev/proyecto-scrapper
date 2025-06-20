@@ -60,10 +60,31 @@ void test_restore_limit() {
     assert(restored == 5); // máximo de 5 restauraciones
 }
 
+void test_remove_by_name() {
+    BookmarkManager manager;
+
+    Bookmark b1("https://a.com", "A");
+    Bookmark b2("https://b.com", "B");
+
+    assert(manager.addBookmark(b1));
+    assert(manager.addBookmark(b2));
+    assert(manager.totalBookmarks() == 2);
+
+    bool removed = manager.removeBookmarkByName("A");
+    assert(removed == true);
+    assert(manager.totalBookmarks() == 1);
+
+    // Intentar con nombre no existente
+    removed = manager.removeBookmarkByName("Inexistente");
+    assert(removed == false);
+    assert(manager.totalBookmarks() == 1);
+}
+
 int main() {
     test_add_and_remove_bookmark();
     test_restore_bookmark();
     test_restore_limit();
+    test_remove_by_name();
     std::cout << "All BookmarkManager tests passed.\n";
     return 0;
 }

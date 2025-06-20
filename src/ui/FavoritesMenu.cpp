@@ -5,12 +5,13 @@
 static void handleViewAllBookmarks(const BookmarkManager& manager);
 static void handleViewBookmarksByFolder(const BookmarkManager& manager);
 static void handleAddBookmark(BookmarkManager& manager);
+static void handleRemoveBookmark(BookmarkManager& manager);
 
 void mostrarMenuFavoritos(BookmarkManager& manager) {
     int opcion;
 
+    clearScreen();
     do {
-        clearScreen();
         std::cout << "===== GESTIÓN DE FAVORITOS =====\n";
         std::cout << "1. Ver todos los favoritos\n";
         std::cout << "2. Ver favoritos por carpeta\n";
@@ -36,7 +37,7 @@ void mostrarMenuFavoritos(BookmarkManager& manager) {
                 handleAddBookmark(manager);
                 break;
             case 4:
-                // implementar
+                handleRemoveBookmark(manager);
                 break;
             case 5:
                 // implementar
@@ -50,6 +51,7 @@ void mostrarMenuFavoritos(BookmarkManager& manager) {
             case 8:
                 return;
             default:
+                clearScreen();
                 std::cout << "❌ Opción inválida.\n";
         }
 
@@ -123,5 +125,39 @@ static void handleAddBookmark(BookmarkManager& manager) {
         std::cout << "✔ Favorito agregado correctamente.\n";
     } else {
         std::cout << "❌ Ya existe un favorito con esa URL o nombre.\n";
+    }
+}
+
+static void handleRemoveBookmark(BookmarkManager& manager) {
+    clearScreen();
+    std::cout << "--- Eliminar favorito ---\n";
+    std::cout << "¿Desea eliminar por:\n";
+    std::cout << "1. URL\n";
+    std::cout << "2. Nombre\n";
+    std::cout << "Seleccione una opción: ";
+
+    int metodo;
+    std::cin >> metodo;
+    std::cin.ignore();
+
+    char input[256];
+    if (metodo == 1) {
+        std::cout << "Ingrese la URL exacta: ";
+        std::cin.getline(input, sizeof(input));
+        if (manager.removeBookmarkByUrl(input)) {
+            std::cout << "✔ Favorito eliminado por URL.\n";
+        } else {
+            std::cout << "❌ No se encontró un favorito con esa URL.\n";
+        }
+    } else if (metodo == 2) {
+        std::cout << "Ingrese el nombre exacto: ";
+        std::cin.getline(input, sizeof(input));
+        if (manager.removeBookmarkByName(input)) {
+            std::cout << "✔ Favorito eliminado por nombre.\n";
+        } else {
+            std::cout << "❌ No se encontró un favorito con ese nombre.\n";
+        }
+    } else {
+        std::cout << "❌ Opción inválida.\n";
     }
 }

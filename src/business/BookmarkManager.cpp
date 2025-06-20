@@ -30,14 +30,13 @@ bool BookmarkManager::addBookmark(const Bookmark& b) {
     return true;
 }
 
-bool BookmarkManager::removeBookmark(const char* url) {
-    Bookmark* b = list.findByName(url);
-    if (!b) b = list.at(0);  // fallback básico
-
-    if (b) {
-        Bookmark backup(*b);
-        if (list.removeByUrl(b->getUrl())) {
-            pushDeleted(backup);
+// Esta funcion no se usa, se deja la declaracion para no romper codigo que cuente con ella por ahora.
+bool BookmarkManager::removeBookmark(const char* input) {
+    for (int i = 0; i < list.size(); ++i) {
+        Bookmark* b = list.at(i);
+        if (compareString(b->getUrl(), input) == 0 || compareString(b->getName(), input) == 0) {
+            pushDeleted(*b);
+            list.removeByUrl(b->getUrl());
             return true;
         }
     }
@@ -140,4 +139,28 @@ void BookmarkManager::loadFromDisk(const char* bookmarksPath, const char* folder
     // Cargar carpetas
     folders.clear();
     FileStorage::loadFolders(folders, foldersPath);
+}
+
+bool BookmarkManager::removeBookmarkByUrl(const char* url) {
+    for (int i = 0; i < list.size(); ++i) {
+        Bookmark* b = list.at(i);
+        if (compareString(b->getUrl(), url) == 0) {
+            pushDeleted(*b);
+            list.removeByUrl(b->getUrl());
+            return true;
+        }
+    }
+    return false;
+}
+
+bool BookmarkManager::removeBookmarkByName(const char* name) {
+    for (int i = 0; i < list.size(); ++i) {
+        Bookmark* b = list.at(i);
+        if (compareString(b->getName(), name) == 0) {
+            pushDeleted(*b);
+            list.removeByUrl(b->getUrl());  // Eliminamos por URL una vez hallado por nombre
+            return true;
+        }
+    }
+    return false;
 }

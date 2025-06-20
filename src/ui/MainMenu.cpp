@@ -10,8 +10,8 @@ void mostrarMenuPrincipal() {
     HistoryManager history;
     int opcion;
 
+    clearScreen();
     do {
-        clearScreen();
         std::cout << "========= MENÚ PRINCIPAL =========\n";
         std::cout << "1. Gestión de favoritos\n";
         std::cout << "2. Navegación web simulada\n";
@@ -36,6 +36,7 @@ void mostrarMenuPrincipal() {
                 std::cout << "Saliendo...\n";
                 break;
             default:
+                clearScreen();
                 std::cout << "❌ Opción inválida.\n";
         }
 
