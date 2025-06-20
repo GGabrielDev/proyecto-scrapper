@@ -10,8 +10,8 @@ static void handleShowCurrentPage(const HistoryManager& history);
 void mostrarMenuNavegacion(HistoryManager& history) {
     int opcion;
 
+    clearScreen();
     do {
-        clearScreen();
         std::cout << "==== NAVEGACIÓN WEB SIMULADA ====\n";
         Page actual = history.getCurrent();
         std::cout << "Página actual: [" << actual.getUrl() << "] - " << actual.getTitle() << "\n";

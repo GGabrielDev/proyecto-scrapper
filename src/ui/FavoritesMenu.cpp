@@ -6,6 +6,9 @@ static void handleViewAllBookmarks(const BookmarkManager& manager);
 static void handleViewBookmarksByFolder(const BookmarkManager& manager);
 static void handleAddBookmark(BookmarkManager& manager);
 static void handleRemoveBookmark(BookmarkManager& manager);
+static void handleRestoreBookmark(BookmarkManager& manager);
+static void handleCreateFolder(BookmarkManager& manager);
+static void handleAddBookmarkToFolder(BookmarkManager& manager);
 
 void mostrarMenuFavoritos(BookmarkManager& manager) {
     int opcion;
@@ -40,13 +43,13 @@ void mostrarMenuFavoritos(BookmarkManager& manager) {
                 handleRemoveBookmark(manager);
                 break;
             case 5:
-                // implementar
+                handleRestoreBookmark(manager);
                 break;
             case 6:
-                // implementar
+                handleCreateFolder(manager);
                 break;
             case 7:
-                // implementar
+                handleAddBookmarkToFolder(manager);
                 break;
             case 8:
                 return;
@@ -159,5 +162,63 @@ static void handleRemoveBookmark(BookmarkManager& manager) {
         }
     } else {
         std::cout << "❌ Opción inválida.\n";
+    }
+}
+
+static void handleRestoreBookmark(BookmarkManager& manager) {
+    clearScreen();
+    std::cout << "--- Restaurar favorito eliminado ---\n";
+
+    if (manager.restoreBookmark()) {
+        std::cout << "✔ Favorito restaurado correctamente.\n";
+    } else {
+        std::cout << "❌ No hay favoritos eliminados para restaurar.\n";
+    }
+}
+
+static void handleCreateFolder(BookmarkManager& manager) {
+    clearScreen();
+    std::cout << "--- Crear carpeta nueva ---\n";
+
+    char name[128];
+    std::cout << "Ingrese el nombre de la carpeta: ";
+    std::cin.getline(name, sizeof(name));
+
+    if (manager.getFolderList()->findByName(name)) {
+        std::cout << "❌ Ya existe una carpeta con ese nombre.\n";
+    } else {
+        manager.createFolder(name);
+        std::cout << "✔ Carpeta creada correctamente.\n";
+    }
+}
+
+static void handleAddBookmarkToFolder(BookmarkManager& manager) {
+    clearScreen();
+    std::cout << "--- Agregar favorito a carpeta ---\n";
+
+    char url[256];
+    char name[128];
+    char folder[128];
+
+    std::cout << "Ingrese la URL del favorito: ";
+    std::cin.getline(url, sizeof(url));
+
+    std::cout << "Ingrese el nombre del favorito: ";
+    std::cin.getline(name, sizeof(name));
+
+    std::cout << "Ingrese el nombre de la carpeta destino: ";
+    std::cin.getline(folder, sizeof(folder));
+
+    if (!manager.getFolderList()->findByName(folder)) {
+        std::cout << "❌ No existe una carpeta con ese nombre.\n";
+        return;
+    }
+
+    Bookmark nuevo(url, name, folder);
+
+    if (manager.addBookmarkToFolder(nuevo, folder)) {
+        std::cout << "✔ Favorito agregado a la carpeta correctamente.\n";
+    } else {
+        std::cout << "❌ No se pudo agregar el favorito. Puede que ya exista.\n";
     }
 }

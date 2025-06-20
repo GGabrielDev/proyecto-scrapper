@@ -31,7 +31,7 @@ public:
     const Bookmark* atRaw(int index) const;
     const FolderList* getFolderList() const;
 
-    // Esta funcion no se usa, se deja la firma para no romper codigo que cuente con ella por ahora.
+    // Esta funcion no se usa
     bool removeBookmark(const char* url);
 
     bool addBookmark(const Bookmark& b);

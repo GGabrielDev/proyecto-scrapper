@@ -23,8 +23,8 @@ static void handleExportHtml(const BookmarkManager& manager);
 void mostrarMenuPersistencia(BookmarkManager& manager) {
     int opcion;
 
+    clearScreen();
     do {
-        clearScreen();
         std::cout << "======= GUARDAR / EXPORTAR =======\n";
         std::cout << "1. Guardar a disco\n";
         std::cout << "2. Cargar desde disco\n";

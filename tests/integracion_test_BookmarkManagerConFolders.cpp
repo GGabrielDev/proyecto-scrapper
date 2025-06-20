@@ -70,6 +70,6 @@ int main() {
     integracion_test_add_and_find_bookmark_in_folder();
     integracion_test_fail_to_add_to_nonexistent_folder();
 
-    std::cout << "All integration tests for folder handling passed.\n";
+    std::cout << "✔ Pruebas de integración con manejo de Carpetas: OK\n";
     return 0;
 }
