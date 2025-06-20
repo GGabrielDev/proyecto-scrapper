@@ -49,17 +49,20 @@ void showPersistenceMenu(BookmarkManager& manager) {
 }
 
 static void handleSave(BookmarkManager& manager) {
+    clearScreen();
     MKDIR("data");
     manager.saveToDisk(FILE_BOOKMARKS, FILE_FOLDERS);
     std::cout << "✔ Favoritos guardados en disco.\n";
 }
 
 static void handleLoad(BookmarkManager& manager) {
+    clearScreen();
     manager.loadFromDisk(FILE_BOOKMARKS, FILE_FOLDERS);
     std::cout << "✔ Favoritos cargados desde disco.\n";
 }
 
 static void handleExportHtml(const BookmarkManager& manager) {
+    clearScreen();
     MKDIR("data");
     bool ok = HtmlExporter::exportToFile(manager, FILE_HTML);
     if (ok)

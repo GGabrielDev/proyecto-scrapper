@@ -64,17 +64,37 @@ void showFavoritesMenu(BookmarkManager& manager) {
 
 static void handleViewAllBookmarks(const BookmarkManager& manager) {
     clearScreen();
-    std::cout << "--- Favoritos guardados ---\n\n";
+    std::cout << "--- Todos los favoritos guardados ---\n\n";
 
+    int count = 0;
+
+    // Mostrar favoritos sueltos
     int total = manager.totalBookmarks();
-    if (total == 0) {
-        std::cout << "No hay favoritos.\n";
-        return;
-    }
-
     for (int i = 0; i < total; ++i) {
         const Bookmark* b = manager.atRaw(i);
-        std::cout << i + 1 << ". " << b->getName() << " (" << b->getUrl() << ")\n";
+        std::cout << ++count << ". " << b->getName() << " (" << b->getUrl() << ")\n";
+    }
+
+    // Mostrar favoritos por carpeta
+    const FolderList* folders = manager.getFolderList();
+    FolderList::Node* node = folders->getHead();
+
+    while (node) {
+        const Folder& folder = node->data;
+        BookmarkList* list = folder.getList();
+
+        for (int i = 0; i < list->size(); ++i) {
+            Bookmark* b = list->at(i);
+            std::cout << ++count << ". " << b->getName()
+                      << " (" << b->getUrl() << ")"
+                      << " [Carpeta: " << folder.getName() << "]\n";
+        }
+
+        node = node->next;
+    }
+
+    if (count == 0) {
+        std::cout << "No hay favoritos.\n";
     }
 }
 
