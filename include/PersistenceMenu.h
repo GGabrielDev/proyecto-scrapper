@@ -3,6 +3,6 @@
 
 #include "BookmarkManager.h"
 
-void mostrarMenuPersistencia(BookmarkManager& manager);
+void showPersistenceMenu(BookmarkManager& manager);
 
 #endif

@@ -3,6 +3,6 @@
 
 #include "BookmarkManager.h"
 
-void mostrarMenuFavoritos(BookmarkManager& manager);
+void showFavoritesMenu(BookmarkManager& manager);
 
 #endif

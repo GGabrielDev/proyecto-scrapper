@@ -20,7 +20,7 @@ static void handleSave(BookmarkManager& manager);
 static void handleLoad(BookmarkManager& manager);
 static void handleExportHtml(const BookmarkManager& manager);
 
-void mostrarMenuPersistencia(BookmarkManager& manager) {
+void showPersistenceMenu(BookmarkManager& manager) {
     int opcion;
 
     clearScreen();
@@ -39,7 +39,9 @@ void mostrarMenuPersistencia(BookmarkManager& manager) {
             case 1: handleSave(manager); break;
             case 2: handleLoad(manager); break;
             case 3: handleExportHtml(manager); break;
-            case 4: return;
+            case 4:
+                clearScreen();
+                return;
             default:
                 std::cout << "❌ Opción inválida.\n";
         }

@@ -24,13 +24,13 @@ void mostrarMenuPrincipal() {
 
         switch (opcion) {
             case 1:
-                mostrarMenuFavoritos(manager);
+                showFavoritesMenu(manager);
                 break;
             case 2:
-                mostrarMenuNavegacion(history);
+                showNavigationMenu(manager, history);
                 break;
             case 3:
-                mostrarMenuPersistencia(manager);
+                showPersistenceMenu(manager);
                 break;
             case 0:
                 std::cout << "Saliendo...\n";

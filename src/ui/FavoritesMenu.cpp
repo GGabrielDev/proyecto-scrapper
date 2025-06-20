@@ -10,7 +10,7 @@ static void handleRestoreBookmark(BookmarkManager& manager);
 static void handleCreateFolder(BookmarkManager& manager);
 static void handleAddBookmarkToFolder(BookmarkManager& manager);
 
-void mostrarMenuFavoritos(BookmarkManager& manager) {
+void showFavoritesMenu(BookmarkManager& manager) {
     int opcion;
 
     clearScreen();
@@ -52,6 +52,7 @@ void mostrarMenuFavoritos(BookmarkManager& manager) {
                 handleAddBookmarkToFolder(manager);
                 break;
             case 8:
+                clearScreen();
                 return;
             default:
                 clearScreen();
