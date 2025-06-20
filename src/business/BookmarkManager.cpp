@@ -17,8 +17,17 @@ const FolderList* BookmarkManager::getFolderList() const {
     return &folders;
 }
 
-void BookmarkManager::addBookmark(const Bookmark& b) {
+bool BookmarkManager::addBookmark(const Bookmark& b) {
+    for (int i = 0; i < list.size(); ++i) {
+        Bookmark* actual = list.at(i);
+        if (compareString(actual->getUrl(), b.getUrl()) == 0 ||
+            compareString(actual->getName(), b.getName()) == 0) {
+            return false;
+        }
+    }
+
     list.add(b);
+    return true;
 }
 
 bool BookmarkManager::removeBookmark(const char* url) {

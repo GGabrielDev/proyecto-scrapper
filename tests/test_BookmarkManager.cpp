@@ -8,8 +8,12 @@ void test_add_and_remove_bookmark() {
     Bookmark b1("https://a.com", "A");
     Bookmark b2("https://b.com", "B");
 
-    manager.addBookmark(b1);
-    manager.addBookmark(b2);
+    assert(manager.addBookmark(b1) == true);
+    assert(manager.addBookmark(b2) == true);
+    assert(manager.totalBookmarks() == 2);
+
+    // Intentar duplicado
+    assert(manager.addBookmark(b1) == false);
     assert(manager.totalBookmarks() == 2);
 
     bool removed = manager.removeBookmark("https://a.com");

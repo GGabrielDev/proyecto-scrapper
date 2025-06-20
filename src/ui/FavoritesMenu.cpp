@@ -2,6 +2,10 @@
 #include "FavoritesMenu.h"
 #include "ClearScreen.h"
 
+static void handleViewAllBookmarks(const BookmarkManager& manager);
+static void handleViewBookmarksByFolder(const BookmarkManager& manager);
+static void handleAddBookmark(BookmarkManager& manager);
+
 void mostrarMenuFavoritos(BookmarkManager& manager) {
     int opcion;
 
@@ -23,13 +27,13 @@ void mostrarMenuFavoritos(BookmarkManager& manager) {
 
         switch (opcion) {
             case 1:
-                // implementar
+                handleViewAllBookmarks(manager);
                 break;
             case 2:
-                // implementar
+                handleViewBookmarksByFolder(manager);
                 break;
             case 3:
-                // implementar
+                handleAddBookmark(manager);
                 break;
             case 4:
                 // implementar
@@ -50,4 +54,74 @@ void mostrarMenuFavoritos(BookmarkManager& manager) {
         }
 
     } while (true);
+}
+
+static void handleViewAllBookmarks(const BookmarkManager& manager) {
+    clearScreen();
+    std::cout << "--- Favoritos guardados ---\n\n";
+
+    int total = manager.totalBookmarks();
+    if (total == 0) {
+        std::cout << "No hay favoritos.\n";
+        return;
+    }
+
+    for (int i = 0; i < total; ++i) {
+        const Bookmark* b = manager.atRaw(i);
+        std::cout << i + 1 << ". " << b->getName() << " (" << b->getUrl() << ")\n";
+    }
+}
+
+static void handleViewBookmarksByFolder(const BookmarkManager& manager) {
+    clearScreen();
+    std::cout << "--- Favoritos por carpeta ---\n\n";
+
+    const FolderList* folders = manager.getFolderList();
+    FolderList::Node* node = folders->getHead();
+
+    if (!node) {
+        std::cout << "No hay carpetas.\n";
+        return;
+    }
+
+    int carpetaIndex = 1;
+    while (node) {
+        Folder* folder = &node->data;
+        std::cout << carpetaIndex++ << ") " << folder->getName() << ":\n";
+
+        BookmarkList* list = folder->getList();
+        if (list->size() == 0) {
+            std::cout << "   (Vacía)\n";
+        } else {
+            for (int i = 0; i < list->size(); ++i) {
+                Bookmark* b = list->at(i);
+                std::cout << "   - " << b->getName() << " (" << b->getUrl() << ")\n";
+            }
+        }
+
+        std::cout << "\n";
+        node = node->next;
+    }
+}
+
+static void handleAddBookmark(BookmarkManager& manager) {
+    clearScreen();
+    std::cout << "--- Agregar nuevo favorito ---\n";
+
+    char url[256];
+    char name[128];
+
+    std::cout << "Ingrese la URL: ";
+    std::cin.getline(url, sizeof(url));
+
+    std::cout << "Ingrese el nombre: ";
+    std::cin.getline(name, sizeof(name));
+
+    Bookmark nuevo(url, name);
+
+    if (manager.addBookmark(nuevo)) {
+        std::cout << "✔ Favorito agregado correctamente.\n";
+    } else {
+        std::cout << "❌ Ya existe un favorito con esa URL o nombre.\n";
+    }
 }
