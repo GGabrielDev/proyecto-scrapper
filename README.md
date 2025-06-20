@@ -52,16 +52,32 @@ classDiagram
         +run()
     }
 
+    class MainMenu {
+        +mostrar()
+    }
+
+    class FavoritesMenu {
+        +mostrar(BookmarkManager&)
+    }
+
+    class NavigationMenu {
+        +mostrar(BookmarkManager&, HistoryManager&)
+    }
+
+    class PersistenceMenu {
+        +mostrar(BookmarkManager&)
+    }
+
     %% Capa de Negocio
     class BookmarkManager {
         -list: BookmarkList
         -folders: FolderList
         -deletedStack: BookmarkStack
-        +addBookmark(Bookmark)
-        +removeBookmark(const char*)
-        +restoreBookmark()
+        +addBookmark(Bookmark): bool
+        +removeBookmark(const char*): bool
+        +restoreBookmark(): bool
         +createFolder(const char*)
-        +addBookmarkToFolder(Bookmark, const char*)
+        +addBookmarkToFolder(Bookmark, const char*): bool
         +getFolderList(): const FolderList*
         +atRaw(int): const Bookmark*
         +totalBookmarks(): int
@@ -72,10 +88,10 @@ classDiagram
     class HistoryManager {
         -backStack: PageStack
         -forwardStack: PageStack
-        -current: Page
+        -current: Page*
         +visit(Page)
-        +goBack(): Page
-        +goForward(): Page
+        +goBack()
+        +goForward()
         +getCurrent(): Page
     }
 
@@ -94,7 +110,7 @@ classDiagram
         -list: BookmarkList
         +getName(): const char*
         +addBookmark(Bookmark)
-        +removeBookmark(const char*)
+        +removeBookmark(const char*): bool
         +getList(): BookmarkList*
     }
 
@@ -131,12 +147,12 @@ classDiagram
     }
 
     class PageStack {
-        -array: Page[]
-        -top: int
+        -topNode: Node*
         +push(Page)
         +pop(): Page
         +peek(): Page
         +isEmpty(): bool
+        +clear()
     }
 
     %% Capa de Datos
@@ -158,9 +174,21 @@ classDiagram
         +length(const char*): int
     }
 
+    class ClearScreen {
+        +clearScreen()
+    }
+
     %% Relaciones
+    ConsoleUI --> MainMenu
+    MainMenu --> FavoritesMenu
+    MainMenu --> NavigationMenu
+    MainMenu --> PersistenceMenu
     ConsoleUI --> BookmarkManager
     ConsoleUI --> HistoryManager
+    FavoritesMenu --> BookmarkManager
+    NavigationMenu --> BookmarkManager
+    NavigationMenu --> HistoryManager
+    PersistenceMenu --> BookmarkManager
     BookmarkManager --> BookmarkList
     BookmarkManager --> FolderList
     BookmarkManager --> BookmarkStack
@@ -169,7 +197,6 @@ classDiagram
     Folder --> BookmarkList
     FolderList --> Folder
     HistoryManager --> PageStack
-    HistoryManager --> Page
     FileStorage --> BookmarkList
     FileStorage --> FolderList
     HtmlExporter --> BookmarkManager
